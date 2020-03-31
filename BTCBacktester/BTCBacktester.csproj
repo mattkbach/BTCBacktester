@@ -81,7 +81,7 @@
     <Compile Include="HighLow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TransactionStat.cs" />
+    <Compile Include="TransactionStats.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

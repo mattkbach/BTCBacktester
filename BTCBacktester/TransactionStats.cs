@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BTCBacktester
 {
-    public class TransactionStat
+    public class TransactionStats
     {
         public DateTime startTime { get; set; }
         public string transactionDirection { get; set; }

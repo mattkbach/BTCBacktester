@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ChoETL;
 using ConsoleTables;
 using System.Linq;
+using System.Net;
 
 namespace BTCBacktester
 {
@@ -39,42 +40,47 @@ namespace BTCBacktester
             candleData.Reverse();
         }
         
-
         private static async Task StartAsync(string walletAddress)
         {
             Console.WriteLine($"Searching for {walletAddress} ...");
-            List<BTCTransaction> transactions = await GetBTCTransactionsAsync(String.Format("https://bitinfocharts.com/bitcoin/address/{0}",walletAddress));
+            List<BTCTransaction> transactions = await GetBTCTransactionsAsync($"https://bitinfocharts.com/bitcoin/address/{walletAddress}");
 
             if (transactions is object)
             {
-                Console.WriteLine($"Found {transactions.Count} transactions. Calculating statistics, please wait ...");
-                List<TransactionStat> transactionStats = CalcuateTransactionStats(transactions);
+                Console.WriteLine($"Found {transactions.Count} transactions. Calculating, please wait ...");
+                List<TransactionStats> transactionStats = CalcuateTransactionStats(transactions, walletAddress);
+                
                 //CalculateWalletStats(transactionStats)
+                
+                
                 Console.WriteLine("Press enter to continue");
                 Console.ReadKey();
             }
 
         }
 
-        private static void CalculateWalletStats(List<TransactionStat> transactionStats)
+        private static void CalculateWalletStats(List<TransactionStats> transactionStats)
         {
             
         }
 
-        private static List<TransactionStat> CalcuateTransactionStats(List<BTCTransaction> transactions)
+        private static List<TransactionStats> CalcuateTransactionStats(List<BTCTransaction> transactions, string walletAddress)
         {
             int numberOfHours = 24;
-            List<TransactionStat> transactionStats = new List<TransactionStat>();
+            List<TransactionStats> transactionStats = new List<TransactionStats>();
             Parallel.ForEach(transactions, transaction =>
             {
                 if (transaction.amountBtc >= 400)
                 {
-
                     Helper helper = new Helper();
                     //Console.WriteLine($"--- Time: {transaction.timestamp.ToString()} Direction: {transaction.direction} AmountBTC: {Math.Round(transaction.amountBtc,2)} ({transaction.amountUsd.ToString("C2")}) USD ---");
 
                     //Get start price
                     double startPrice = helper.GetPriceAtTime(transaction.timestamp);
+                    if (startPrice == -1)
+                    {
+                        return;
+                    }
                     //Console.WriteLine($"--- Start Price: {startPrice}");
 
                     //Get index values for each hour 
@@ -97,7 +103,6 @@ namespace BTCBacktester
                         decimal pctChange = 0;
                         if (highs[$"high{i}"] > startPrice)
                         {
-
                             difference = highs[$"high{i}"] - startPrice;
                             pctChange = Math.Round(((decimal)difference / (decimal)startPrice) * 100, 2);
                         }
@@ -155,7 +160,7 @@ namespace BTCBacktester
                     }
 
                     //Add to transactionStats object
-                    TransactionStat transactionStat = new TransactionStat();
+                    TransactionStats transactionStat = new TransactionStats();
                     transactionStat.startTime = transaction.timestamp;
                     transactionStat.amountBtc = Math.Round(transaction.amountBtc, 2);
                     transactionStat.transactionDirection = transaction.direction;
@@ -179,13 +184,13 @@ namespace BTCBacktester
             });
 
             //Sort list by ascending
-            List<TransactionStat> transactionStatsSorted = transactionStats.OrderBy(o => o.startTime).ToList();
-
+            List<TransactionStats> transactionStatsSorted = transactionStats.OrderBy(o => o.startTime).ToList();
 
             //Write table to Console
-            ConsoleTable.From<TransactionStat>(transactionStatsSorted).Write();
+            ConsoleTable.From<TransactionStats>(transactionStatsSorted).Write();
+            
             //Write to CSV
-            using (var parser = new ChoCSVWriter<TransactionStat>("test1.csv").WithFirstLineHeader())
+            using (var parser = new ChoCSVWriter<TransactionStats>($"{walletAddress}.csv").WithFirstLineHeader())
             {
                 parser.Write(transactionStatsSorted);
             }
@@ -260,6 +265,8 @@ namespace BTCBacktester
             catch (Exception ex)
             {
                 Console.WriteLine($"Error!: {ex}");
+                Console.WriteLine("Press enter to continue");
+                Console.ReadKey();
             }
             return null;
         }

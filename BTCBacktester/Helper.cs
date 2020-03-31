@@ -58,13 +58,15 @@ namespace BTCBacktester
             //Get index from timestamp
             int index = Program.candleData.FindIndex(f => f.timestamp == startTime);
 
-            double? price = Convert.ToDouble(Program.candleData[index].close);
-            if (price.HasValue)
+            if (index == -1)
             {
-                return (double)price;
-             }
-            return -1;
-
+                Console.WriteLine($"Error, candle not found in CandleData. {timestamp.ToString()}");
+                return -1;
+            } else
+            {
+                double price = (double)Program.candleData[index].close;
+                return price;
+            }
         }
 
         public List<int> GetIndexValues(DateTime origStartTime, int numberOfHours)
@@ -74,11 +76,10 @@ namespace BTCBacktester
 
             //Create list for index values 
             List<int> indexList = new List<int>();
-            //Add start which will be index 0
-            indexList.Add(Program.candleData.FindIndex(f => f.timestamp == startTime));
 
-            for (int i = 1; i <= numberOfHours; i++)
+            for (int i = 0; i <= numberOfHours; i++)
             {
+                //Index 0 will be candle at startTime
                 DateTime time = startTime.AddHours(i);
                 int index = Program.candleData.FindIndex(f => f.timestamp == time);
                 if (index == -1)
@@ -97,7 +98,7 @@ namespace BTCBacktester
 
             //Calculate highs and store in dictioary 
             IDictionary<string, double> highs = new Dictionary<string, double>();
-            for (int i = 1; i <= numberOfHours; i++)
+            for (int i = 0; i <= numberOfHours; i++)
             {
                 string name = $"high{i}";
                 double HH = HighestHigh(indexList[i - 1], indexList[i]);
