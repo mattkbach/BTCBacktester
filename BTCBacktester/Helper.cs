@@ -44,8 +44,6 @@ namespace BTCBacktester
             List<CandleData> LResponseJSON = new List<CandleData>();
             string CandleDataFileRead = File.ReadAllText(sFile);
             LResponseJSON = JsonConvert.DeserializeObject<List<CandleData>>(CandleDataFileRead);
-            //test1
-            //test
             return LResponseJSON;
         }
 
@@ -98,7 +96,7 @@ namespace BTCBacktester
 
             //Calculate highs and store in dictioary 
             IDictionary<string, double> highs = new Dictionary<string, double>();
-            for (int i = 0; i <= numberOfHours; i++)
+            for (int i = 1; i <= numberOfHours; i++)
             {
                 string name = $"high{i}";
                 double HH = HighestHigh(indexList[i - 1], indexList[i]);
