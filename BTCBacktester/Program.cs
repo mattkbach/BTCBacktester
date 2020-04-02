@@ -14,7 +14,7 @@ namespace BTCBacktester
 {
     public class Program
     {
-        //
+        //Added -full to bitinfocharts wallet URL 
         public static List<CandleData> candleData = new List<CandleData>();
 
         static async Task Main(string[] args)
@@ -44,14 +44,15 @@ namespace BTCBacktester
         private static async Task StartAsync(string walletAddress)
         {
             Console.WriteLine($"Searching for {walletAddress} ...");
-            List<BTCTransaction> transactions = await GetBTCTransactionsAsync($"https://bitinfocharts.com/bitcoin/address/{walletAddress}");
+            List<BTCTransaction> transactions = await GetBTCTransactionsAsync($"https://bitinfocharts.com/bitcoin/address/{walletAddress}-full");
 
             if (transactions is object)
             {
                 Console.WriteLine($"Found {transactions.Count} transactions. Calculating, please wait ...");
                 List<TransactionStats> transactionStats = CalcuateTransactionStats(transactions, walletAddress);
+
+                CalculateWalletStats(transactionStats);
                 
-                //CalculateWalletStats(transactionStats)
                 
                 
                 Console.WriteLine("Press enter to continue");
@@ -62,7 +63,40 @@ namespace BTCBacktester
 
         private static void CalculateWalletStats(List<TransactionStats> transactionStats)
         {
-            
+            decimal inPctUpTotal = 0;
+            decimal inPctDownTotal = 0;
+            decimal outPctUpTotal = 0;
+            decimal outPctDownTotal = 0;
+
+            WalletStats walletStats = new WalletStats();
+
+            foreach (TransactionStats transaction in transactionStats)
+            {
+                if (transaction.transactionDirection == "IN")
+                {
+                    walletStats.totalInTransactions++;
+                    inPctUpTotal = inPctUpTotal + transaction.pctChgUp;
+                    inPctDownTotal = inPctDownTotal + transaction.pctChgDown;
+                }
+
+                if (transaction.transactionDirection == "OUT")
+                {
+                    walletStats.totalOutTransactions++;
+                    outPctUpTotal = outPctUpTotal + transaction.pctChgUp;
+                    outPctDownTotal = outPctDownTotal + transaction.pctChgDown;
+                }
+            }
+            walletStats.inPctUpAvg = Math.Round(inPctUpTotal / walletStats.totalInTransactions, 2);
+            walletStats.inPctDownAvg = Math.Round(inPctDownTotal / walletStats.totalInTransactions, 2);
+            walletStats.outPctUpAvg = Math.Round(outPctUpTotal / walletStats.totalOutTransactions, 2);
+            walletStats.outPctDownAvg = Math.Round(outPctDownTotal / walletStats.totalOutTransactions, 2);
+
+            //Write table to console
+            Console.WriteLine("===== Wallet Stats =====");
+            List<WalletStats> walletStatsList = new List<WalletStats>();
+            walletStatsList.Add(walletStats);
+            ConsoleTable.From<WalletStats>(walletStatsList).Write();
+
         }
 
         private static List<TransactionStats> CalcuateTransactionStats(List<BTCTransaction> transactions, string walletAddress)
@@ -73,6 +107,14 @@ namespace BTCBacktester
             {
                 if (transaction.amountBtc >= 400)
                 {
+                    //Ignore transactions on March 12/13th
+                    DateTime dtMarch122020 = new DateTime(2020, 03, 12);
+                    DateTime dtMarch132020 = new DateTime(2020, 03, 13);
+                    if ((transaction.timestamp.Date == dtMarch132020.Date) || (transaction.timestamp.Date == dtMarch122020.Date))
+                    {
+                        return;
+                    }
+
                     Helper helper = new Helper();
                     //Console.WriteLine($"--- Time: {transaction.timestamp.ToString()} Direction: {transaction.direction} AmountBTC: {Math.Round(transaction.amountBtc,2)} ({transaction.amountUsd.ToString("C2")}) USD ---");
 

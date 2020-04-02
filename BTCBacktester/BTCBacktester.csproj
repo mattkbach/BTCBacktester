@@ -82,6 +82,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransactionStats.cs" />
+    <Compile Include="WalletStats.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
