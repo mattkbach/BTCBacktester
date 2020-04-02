@@ -14,11 +14,12 @@ namespace BTCBacktester
 {
     public class Program
     {
+        //
         public static List<CandleData> candleData = new List<CandleData>();
 
         static async Task Main(string[] args)
         {
-            Console.Title = "BTC Backtester 1.0";
+            Console.Title = "BTC Backtester 1.1";
             Console.WriteLine("Loading Candle Data, please wait ...");
             LoadCandleData();
             //StartAsync();
