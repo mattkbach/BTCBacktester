@@ -16,9 +16,15 @@ namespace BTCBacktester
             double highestHigh = 0.0;
             for (int i = startIndex; i <= endIndex; i++)
             {
-                if (Program.candleData[i].high > highestHigh)
+                if (i == -1)
                 {
-                    highestHigh = (double)Program.candleData[i].high;
+                    continue;
+                } else
+                {
+                    if (Program.candleData[i].high > highestHigh)
+                    {
+                        highestHigh = (double)Program.candleData[i].high;
+                    }
                 }
             }
 
@@ -30,9 +36,16 @@ namespace BTCBacktester
             double lowestLow = double.MaxValue;
             for (int i = StartIndex; i <= endIndex; i++)
             {
-                if (Program.candleData[i].low < lowestLow)
+                if (i == -1)
                 {
-                    lowestLow = (double)Program.candleData[i].low;
+                    continue;
+                } 
+                else
+                {
+                    if (Program.candleData[i].low < lowestLow)
+                    {
+                        lowestLow = (double)Program.candleData[i].low;
+                    }
                 }
             }
 

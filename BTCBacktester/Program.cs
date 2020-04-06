@@ -19,7 +19,7 @@ namespace BTCBacktester
 
         static async Task Main(string[] args)
         {
-            Console.Title = "BTC Backtester 1.1";
+            Console.Title = "BTC Backtester 1.2";
             Console.WriteLine("Loading Candle Data, please wait ...");
             LoadCandleData();
             //StartAsync();
@@ -186,6 +186,11 @@ namespace BTCBacktester
                     //Calculate highest high and lowest low 
                     double hhPrice = helper.HighestHigh(indexList[0], indexList[indexList.Count - 1]);
                     double llPrice = helper.LowestLow(indexList[0], indexList[indexList.Count - 1]);
+
+                    if (hhPrice > 40000 || hhPrice <=0 || llPrice > 40000 || llPrice <= 0)
+                    {
+                        return;
+                    }
 
                     //Calculate % change from startPrice in both directions
                     decimal pctChangeUp = Math.Round((((decimal)hhPrice - (decimal)startPrice) / (decimal)startPrice) * 100, 2);
