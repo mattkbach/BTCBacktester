@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BTCBacktester
 {
-    public class CandleData
+    public class BitmexCandleData
     {
         [JsonProperty("timestamp")]
         public DateTime? timestamp { get; set; }
@@ -37,7 +37,7 @@ namespace BTCBacktester
         public double? foreignNotional { get; set; }
 
 
-        public CandleData()
+        public BitmexCandleData()
         {
 
         }

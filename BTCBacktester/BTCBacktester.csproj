@@ -75,12 +75,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitInfoChartsHelper.cs" />
     <Compile Include="BTCTransaction.cs" />
-    <Compile Include="CandleData.cs" />
+    <Compile Include="BitmexCandleData.cs" />
+    <Compile Include="CandleDataHelper.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="HighLow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CalcStatsHelper.cs" />
     <Compile Include="TransactionStats.cs" />
     <Compile Include="WalletStats.cs" />
   </ItemGroup>
