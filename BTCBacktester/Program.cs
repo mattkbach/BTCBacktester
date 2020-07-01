@@ -20,11 +20,13 @@ namespace BTCBacktester
     {
         public static List<BitmexCandleData> candleData = new List<BitmexCandleData>();
         public static string candleDataLocation = "C:\\CandleData\\1minCandleData.json";
+        public static string appTitle = "BTC Backtester 1.3.1";
 
         static async Task Main(string[] args)
         {
-            Console.Title = "BTC Backtester 1.3";
-            
+            Console.Title = appTitle;
+
+
             CandleDataHelper.LoadCandleData();
             
             while (true)

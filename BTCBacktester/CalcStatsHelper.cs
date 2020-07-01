@@ -2,6 +2,7 @@
 using ConsoleTables;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace BTCBacktester
 {
     public class CalcStatsHelper
     {
+
+        public static int transactionsCompleted = 0;
         public static void CalculateWalletStats(List<TransactionStats> transactionStats)
         {
             decimal inPctUpTotal = 0;
@@ -50,6 +53,7 @@ namespace BTCBacktester
 
         public static List<TransactionStats> CalcuateTransactionStats(List<BTCTransaction> transactions, string walletAddress)
         {
+            int totalTransactions = transactions.Count;
             int numberOfHours = 24;
             List<TransactionStats> transactionStats = new List<TransactionStats>();
             Parallel.ForEach(transactions, transaction =>
@@ -175,11 +179,19 @@ namespace BTCBacktester
                     transactionStat.pctChg12Hr = pctChange12Hr;
                     transactionStat.pctChg24Hr = pctChange24Hr;
 
-
                     transactionStats.Add(transactionStat);
 
+                    transactionsCompleted += 1;
+                    Console.Title = $"{Program.appTitle} - {transactionsCompleted}/{totalTransactions}";
+                }
+                else
+                {
+                    transactionsCompleted += 1;
+                    Console.Title = $"{Program.appTitle} - {transactionsCompleted}/{totalTransactions}";
                 }
             });
+
+            Console.Title = Program.appTitle;
 
             //Sort list by ascending
             List<TransactionStats> transactionStatsSorted = transactionStats.OrderBy(o => o.startTime).ToList();

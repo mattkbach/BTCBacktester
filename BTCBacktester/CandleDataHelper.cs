@@ -60,7 +60,6 @@ namespace BTCBacktester
         public static void UpdateCandleData()
         {
             List<BitmexCandleData> responseJSON = new List<BitmexCandleData>();
-            List<BitmexCandleData> allCandleData = new List<BitmexCandleData>();
             int iStart = 1;
             string response = "";
             while (response != "[]")
